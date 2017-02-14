@@ -38,7 +38,7 @@ naturalSizeSC (Box _) = 0
 -- for generating affine and linear SwissCheese
 
 -- Given a level and a SwissCheese, make all the SwissCheeses obtained by replacing
--- a □i by Index i and raising the level of the boxes
+-- a □i by Index i
 replaceBox :: Int -> SwissCheese -> [SwissCheese]
 replaceBox i (c@(IndexSC _)) = []
 replaceBox i (Box j) = if j == i then [IndexSC (int2DeBruijn i)] else []

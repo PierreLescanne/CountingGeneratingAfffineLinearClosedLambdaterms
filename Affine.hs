@@ -117,7 +117,7 @@ amABSwB n m
   | head m == 0 = sum [amABSAtD n m i |i<-[1..(n-1)]]
   | otherwise = 0
                 
--- counting affine terms that are abstactions with no binding
+-- counting affine terms that are abstractions with no binding
 amABSnB :: Int -> [Int] -> Integer
 amABSnB n m 
     | head m == 0 = (acc (n-1) (tail m ++ [0]))

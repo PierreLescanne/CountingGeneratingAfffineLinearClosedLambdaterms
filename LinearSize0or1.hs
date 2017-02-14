@@ -20,17 +20,25 @@ theMemoryL0 = memoryL0 upBound []
 accL0 :: Int -> [Int] -> Integer
 accL0 n m = access theMemoryL0 n m
 
+-- counting affine terms that are applications
+lm0App n m  = sum (map (\((q,r),(k,nk))->(accL0 k q)*(accL0 nk r)) (allCombinations m (n-1)))
+
+-- counting affine terms that are abstractions with binding at depth i
+lm0ABSAtD n m i = (fromIntegral(1 + m!!i))*(accL0 (n-1) (tail (inc i m)++[0])) -- à voir
+
+-- counting affine terms that are abstractions with binding
+lm0ABSwB :: Int -> [Int] -> Integer
+lm0ABSwB n m
+  | head m == 0 = sum [lm0ABSAtD n m i |i<-[1..n]]
+  | otherwise = 0
+
 lm0 :: Int -> [Int] -> Integer
-lm0 0 m = iv (sum m == 1 )
-lm0 n m = let sumApp = sum (map (\((q,r),(k,nk))->(accL0 k q)*(accL0 nk r)) (allCombinations m (n-1)))
-              sumAbs 0 = 0
-              sumAbs i = sumAbs (i-1) + (fromIntegral(1 + m!!i))*(accL0 (n-1) (tail (inc i m)++[0]))
-          in  sumApp +
-              if head m == 0
-              then sumAbs (n-1)
-              else 0
+lm0 0 m = iv (head m == 1 && all ((==) 0) (tail m)) -- there is only □0
+lm0 n m = lm0App n m + lm0ABSwB n m 
 
 nbClosedLinearSize0 = [lm0 n (replicate upBound 0) | n<-[0..upBound]]
+
+-- [0,1,0,5,0,60,0,1105,0,27120,0,828250, ...
 
 -- ============================================================
 --         COUNTING WITH VARIABLE SIZE 1
@@ -52,12 +60,12 @@ accL1 n m = access theMemoryL1 n m
 lm1App n m  = sum (map (\((q,r),(k,nk))->(accL1 k q)*(accL1 nk r)) (allCombinations m (n-1)))
 
 -- counting affine terms that are abstractions with binding at depth i
-lm1ABSAtD n m i = (fromIntegral(1 + m!!i))*(accL1 (n-2) (tail (inc i m)++[0])) -- à voir
+lm1ABSAtD n m i = (fromIntegral(1 + m!!i))*(accL1 (n-2) (tail (inc i m)++[0]))
 
 -- counting affine terms that are abstractions with binding
 lm1ABSwB :: Int -> [Int] -> Integer
 lm1ABSwB n m
-  | head m == 0 = sum [lm1ABSAtD n m i |i<-[1..(n-1)]]
+  | head m == 0 = sum [lm1ABSAtD n m i |i<-[1..n]]
   | otherwise = 0
  
 lm1 :: Int -> [Int] -> Integer

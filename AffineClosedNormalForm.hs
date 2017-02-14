@@ -29,15 +29,15 @@ theMemoryACNF = memoryACNF (upBound) []
 -- memory of normal forms
 accACNF n m = access theMemoryACNF n m
 
-memoryNeutrals :: Int -> [Int] -> Mem
-memoryNeutrals 0 m = Load [amNeutrals n (reverse m) | n<-[0..]]
-memoryNeutrals k m = Mem [memoryNeutrals (k-1) (j:m) | j<-[0..]] 
+memoryANeutrals :: Int -> [Int] -> Mem
+memoryANeutrals 0 m = Load [amNeutrals n (reverse m) | n<-[0..]]
+memoryANeutrals k m = Mem [memoryANeutrals (k-1) (j:m) | j<-[0..]] 
 
-theMemoryNeutrals = memoryNeutrals (upBound) []
+theMemoryANeutrals = memoryANeutrals (upBound) []
 
 -- memory of neutrals
 accNeutrals :: Int -> [Int] -> Integer
-accNeutrals n m = access theMemoryNeutrals n m
+accNeutrals n m = access theMemoryANeutrals n m
 
 -- Neutrals
 amNeutrals :: Int -> [Int] -> Integer
@@ -60,9 +60,8 @@ amACNfABSnB n m
     | otherwise = 0
 
 amCNF :: Int -> [Int] -> Integer
-
 amCNF 0 m = amNeutrals 0 m
-amCNF n m =  amNeutrals n m + amACNfABSwB n m + amACNfABSnB n m 
+amCNF n m = amNeutrals n m + amACNfABSwB n m + amACNfABSnB n m 
 
 list_nbACNF = [amCNF n (replicate upBound 0)|n<-[0..upBound]]
 

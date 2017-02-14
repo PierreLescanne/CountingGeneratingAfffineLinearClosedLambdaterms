@@ -54,7 +54,6 @@ lmLCNfABSwB n m
   | otherwise = 0
                 
 lmCNF :: Int -> [Int] -> Integer
-
 lmCNF 0 m = lmNeutrals 0 m
 lmCNF n m =  lmNeutrals n m + lmLCNfABSwB n m
 
@@ -103,10 +102,10 @@ lmGLCNF :: Int -> [Int] -> [SwissCheese]
 lmGLCNF 0 m = allAPPNeutral 0 m
 lmGLCNF n m = allAPPNeutral n m ++ allABSNFwB n m
 
-list_LCNF = [lmGLCNF n (replicate upBound 0) | n<-[0..upBound]]
+list_GLCNF = [lmGLCNF n (replicate upBound 0) | n<-[0..upBound]]
 
 array_GLCNF i = let nbLCNFi = list_nbLCNF !! i
-              in array (1,nbLCNFi) (zip [1..nbLCNFi] (list_LCNF !! i))
+                in array (1,nbLCNFi) (zip [1..nbLCNFi] (list_GLCNF !! i))
                  :: Array Integer SwissCheese
 
 -- =========================================================

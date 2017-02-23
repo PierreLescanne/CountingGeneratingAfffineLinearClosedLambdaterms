@@ -1,12 +1,14 @@
+-- a program for counting linear closed lambda terms using
+-- variable size 0 or variable size 1
 module LinearSize0or1 where
 
 import NaturalSize
 import TermUnranking
 import Affine
 
--- ============================================================
+-- =======================================================
 --         COUNTING WITH VARIABLE SIZE 0
--- ============================================================
+-- =======================================================
 -- It is not about natural size by I put it here for convenience
 
 -- Constants
@@ -20,13 +22,13 @@ theMemoryL0 = memoryL0 upBound []
 accL0 :: Int -> [Int] -> Integer
 accL0 n m = access theMemoryL0 n m
 
--- counting affine terms that are applications
+-- counting linear terms that are applications
 lm0App n m  = sum (map (\((q,r),(k,nk))->(accL0 k q)*(accL0 nk r)) (allCombinations m (n-1)))
 
--- counting affine terms that are abstractions with binding at depth i
-lm0ABSAtD n m i = (fromIntegral(1 + m!!i))*(accL0 (n-1) (tail (inc i m)++[0])) -- à voir
+-- counting linear terms that are abstractions with binding at depth i
+lm0ABSAtD n m i = (fromIntegral(1 + m!!i))*(accL0 (n-1) (tail (inc i m)++[0]))
 
--- counting affine terms that are abstractions with binding
+-- counting linear terms that are abstractions with binding
 lm0ABSwB :: Int -> [Int] -> Integer
 lm0ABSwB n m
   | head m == 0 = sum [lm0ABSAtD n m i |i<-[1..n]]
@@ -40,10 +42,13 @@ nbClosedLinearSize0 = [lm0 n (replicate upBound 0) | n<-[0..upBound]]
 
 -- [0,1,0,5,0,60,0,1105,0,27120,0,828250, ...
 
--- ============================================================
+nbClosedLinearSize0By2 =  [lm0 (2*k+1) (replicate upBound 0) | k<-[0..(upBound `div` 2)]]
+
+-- [1,5,60,1105,27120,828250,30220800,
+
+-- =======================================================
 --         COUNTING WITH VARIABLE SIZE 1
--- ============================================================
--- It is not about natural size by I put it here for convenience
+-- =======================================================
 
 -- Constants
 
@@ -56,13 +61,13 @@ theMemoryL1 = memoryL1 upBound []
 accL1 :: Int -> [Int] -> Integer
 accL1 n m = access theMemoryL1 n m
 
--- counting affine terms that are applications
+-- counting linear terms that are applications
 lm1App n m  = sum (map (\((q,r),(k,nk))->(accL1 k q)*(accL1 nk r)) (allCombinations m (n-1)))
 
--- counting affine terms that are abstractions with binding at depth i
+-- counting linear terms that are abstractions with binding at depth i
 lm1ABSAtD n m i = (fromIntegral(1 + m!!i))*(accL1 (n-2) (tail (inc i m)++[0]))
 
--- counting affine terms that are abstractions with binding
+-- counting linear terms that are abstractions with binding
 lm1ABSwB :: Int -> [Int] -> Integer
 lm1ABSwB n m
   | head m == 0 = sum [lm1ABSAtD n m i |i<-[1..n]]
@@ -77,6 +82,7 @@ nbClosedLinearSize1 = [lm1 n (replicate upBound 0) | n<-[0..upBound]]
 
 -- sequence A062980
 nbClosedLinearSize1Step3 = [lm1 (3*n+2) (replicate upBound 0) | n<-[0..]]
+
 --- Local Variables:
 --- mode: haskell
 --- mode: haskell-indentation

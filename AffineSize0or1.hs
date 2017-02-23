@@ -24,8 +24,7 @@ accA0 n m = access theMemoryA0 n m
 am0App n m  = sum (map (\((q,r),(k,nk))->(accA0 k q)*(accA0 nk r)) (allCombinations m (n-1)))
 
 -- counting affine terms that are abstractions with binding at depth i
-am0ABSAtD n m i = (fromIntegral(1 + m!!i))*(accA0 (n-1) (tail (inc i m)++[0])) -- à voir
-
+am0ABSAtD n m i = (fromIntegral(1 + m!!i))*(accA0 (n-1) (tail (inc i m)++[0])) 
 -- counting affine terms that are abstractions with binding
 am0ABSwB :: Int -> [Int] -> Integer
 am0ABSwB n m

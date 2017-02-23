@@ -5,7 +5,7 @@ import NaturalSize
 import TermUnranking
 
 -- Constants
-upBound = 40  -- the bound for looking for terms
+upBound = 30  -- the bound for looking for terms
 m0 = replicate upBound (0::Int)  -- a tuple made of 0's
 m1 = 1: (replicate (upBound -1) (0::Int)) -- a tuple made of a 1 followed by 0's
 
@@ -29,13 +29,13 @@ splitInt i = zip [0..i] (reverse [0..i])
 glue :: [(a, b)] -> [([a], [b])] -> [([a], [b])]
 glue l1 l2 = map (\((a,b),(c,d)) -> (a:c,b:d)) (cartesian l1 l2)
 
--- split an uple in sums of tuples
+-- split a tuple in sums of tuples
 split :: [Int] -> [([Int],[Int])]
 split [] = []
 split [n] =  map (\(a,b)->([a],[b])) (splitInt n)
 split (n:l) = glue (splitInt n) (split l)
 
--- uple have the same size, so they are filled up to upBound.
+-- tuples must have the same size, so they are filled up to upBound.
 splitFill m = let fill l = l ++ (replicate (upBound - length l) 0)
               in map (\(l1,l2)->(fill l1,fill l2)) (split m)
 

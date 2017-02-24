@@ -2,6 +2,8 @@
 -- using natural size
 module AffineGeneration where
 
+import Constants
+
 import NaturalSize
 import Affine
 import SwissCheese
@@ -42,7 +44,7 @@ amg' n m = let allApp = foldr (++) [] (map (\((q,r),(k,nk))-> appSC$cartesian (a
 
 list_amg' = [amg' n (replicate upBound 0) | n<-[0..upBound]]
 
-array_amg' i = let nbAffi = list_am !! i
+array_amg' i = let nbAffi = list_nbAffine !! i
               in array (1,nbAffi) (zip [1..nbAffi] (list_amg' !! i))
                  :: Array Integer SwissCheese
 
@@ -84,7 +86,7 @@ amg n m = allAPP n m ++ allABSwB n m ++ allABSnB n m
 
 list_amg = [amg n (replicate upBound 0) | n<-[0..upBound]]
 
-array_amg i = let nbAffi = list_am !! i
+array_amg i = let nbAffi = list_nbAffine !! i
               in array (1,nbAffi) (zip [1..nbAffi] (list_amg !! i))
                  :: Array Integer SwissCheese
 
@@ -103,7 +105,7 @@ rand = do generator <- get
 randomClosedAffineTerm :: Int -> Gen SwissCheese
 randomClosedAffineTerm i =
   do randomDouble <- rand
-     let randomIndex = round ((fromInteger (list_am !! i)) * randomDouble)
+     let randomIndex = round ((fromInteger (list_nbAffine !! i)) * randomDouble)
      return ((array_amg i) ! randomIndex)
 
 anAffineSC :: Int -> Int -> SwissCheese

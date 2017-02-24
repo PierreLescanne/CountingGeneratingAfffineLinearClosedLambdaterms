@@ -2,6 +2,8 @@
 -- using natural size
 module LinearGeneration where
 
+import Constants
+
 import NaturalSize
 import Affine
 import Linear

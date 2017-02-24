@@ -7,7 +7,7 @@ import SwissCheese
 import LinearSize0or1
 
 -----------------------------------------------------
---  generating with variable size  1
+--  generating with variable size 0
 -----------------------------------------------------
 -- Constants
 
@@ -76,8 +76,6 @@ allABSG1wB n m
                 
 lg1 :: Int -> [Int] -> [SwissCheese]
 lg1 0 m =  if (head m == 1 && all ((==) 0) (tail m)) then [Box 0] else []
-lg1 1 m = if (head m == 2 && all ((==) 0) (tail m)) then [AppSC (Box 0) (Box 0)] else []
-               -- there is only □0 □0 
 lg1 n m = allAPPG1 n m ++ allABSG1wB n m
 
 list_lg1 = [lg1 n (replicate upBound 0) | n<-[0..upBound]]

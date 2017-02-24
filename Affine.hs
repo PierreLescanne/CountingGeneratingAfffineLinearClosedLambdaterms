@@ -3,11 +3,7 @@ module Affine where
 
 import NaturalSize
 import TermUnranking
-
--- Constants
-upBound = 30  -- the bound for looking for terms
-m0 = replicate upBound (0::Int)  -- a tuple made of 0's
-m1 = 1: (replicate (upBound -1) (0::Int)) -- a tuple made of a 1 followed by 0's
+import Constants
 
 -- For example: cartesian [1,2] [3,4] = [(1,3),(1,4),(2,3),(2,4)]
 cartesian :: [a] -> [b] -> [(a,b)]
@@ -94,9 +90,9 @@ access (Mem listM) n (k:m) = access (listM !! k) n m
 -----------------------------------------------------
 -- An efficient  version counting separately classes
 -----------------------------------------------------
--- The memory for storing the computation of am
+-- The memory for storing the computation of a
 memory :: Int -> [Int] -> Mem
-memory 0 m = Load [am n (reverse m) | n<-[0..]]
+memory 0 m = Load [nbAffine n (reverse m) | n<-[0..]]
 memory k m = Mem [memory (k-1) (j:m) | j<-[0..]] 
 
 theMemory = memory (upBound) []
@@ -105,29 +101,29 @@ acc :: Int -> [Int] -> Integer
 acc n m = access theMemory n m
 
 -- counting affine terms that are applications
-amAPP :: Int -> [Int] -> Integer
-amAPP n m = sum (map (\((q,r),(k,nk))->(acc k q)*(acc nk r)) (allCombinations m (n-1)))
+aAPP :: Int -> [Int] -> Integer
+aAPP n m = sum (map (\((q,r),(k,nk))->(acc k q)*(acc nk r)) (allCombinations m (n-1)))
 
 -- counting affine terms that are abstractions with binding at depth i
-amABSAtD n m i = (fromIntegral (1 + m!!i))*(acc (n - i - 1) ((tail (inc i m)) ++ [0]))
+aABSAtD n m i = (fromIntegral (1 + m!!i))*(acc (n - i - 1) ((tail (inc i m)) ++ [0]))
 
 -- counting affine terms that are abstractions with binding
-amABSwB :: Int -> [Int] -> Integer
-amABSwB n m 
-  | head m == 0 = sum [amABSAtD n m i |i<-[1..(n-1)]]
+aABSwB :: Int -> [Int] -> Integer
+aABSwB n m 
+  | head m == 0 = sum [aABSAtD n m i |i<-[1..(n-1)]]
   | otherwise = 0
                 
 -- counting affine terms that are abstractions with no binding
-amABSnB :: Int -> [Int] -> Integer
-amABSnB n m 
+aABSnB :: Int -> [Int] -> Integer
+aABSnB n m 
     | head m == 0 = (acc (n-1) (tail m ++ [0]))
     | otherwise = 0
 
-am :: Int -> [Int] -> Integer
-am 0 m = iv (head m == 1 && all ((==) 0) (tail m))
-am n m =  amAPP n m + amABSwB n m + amABSnB n m 
+nbAffine :: Int -> [Int] -> Integer
+nbAffine 0 m = iv (head m == 1 && all ((==) 0) (tail m))
+nbAffine n m =  aAPP n m + aABSwB n m + aABSnB n m 
 
-list_am = [am n (replicate upBound 0)|n<-[0..upBound]]
+list_nbAffine = [nbAffine n (replicate upBound 0)|n<-[0..upBound]]
 
 --- Local Variables:
 --- mode: haskell

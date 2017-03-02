@@ -1,4 +1,4 @@
-module LinearSize0or1 where
+module AffineSize0or1 where
 
 import Constants
 
@@ -9,7 +9,7 @@ import Linear
 import SwissCheese
 
 -- ============================================================
---         COUNTING WITH VARIABLE SIZE 0
+--         COUNTING AFFINE TERMS WITH VARIABLE SIZE 0
 -- ============================================================
 
 -- Constants
@@ -66,7 +66,7 @@ accA1 n m = access theMemoryA1 n m
 am1App n m  = sum (map (\((q,r),(k,nk))->(accA1 k q)*(accA1 nk r)) (allCombinations m (n-1)))
 
 -- counting affine terms that are abstractions with binding at depth i
-am1ABSAtD n m i = (fromIntegral(1 + m!!i))*(accA1 (n-2) (tail (inc i m)++[0])) -- à voir
+am1ABSAtD n m i = (fromIntegral(1 + m!!i))*(accA1 (n-2) (tail (inc i m)++[0]))
 
 -- counting affine terms that are abstractions with binding
 am1ABSwB :: Int -> [Int] -> Integer
@@ -85,6 +85,13 @@ am1 0 m = iv (head m == 1 && all ((==) 0) (tail m)) -- there is only □0
 am1 n m = am1App n m + am1ABSwB n m + am1ABSnB n m
 
 nbClosedAffineSize1 = [am1 n (replicate upBound 0) | n<-[0..upBound]]
+-- [0,0,1,2,3,9,30,81,242,838,2799,9365,33616,122937,449698,1696724,6558855,25559806,101294687,409363758,
+-- versus 0, 0, 1, 2, 3, 9, 30, 81, 225, 702, 2187, 6561, 19602, 59049, 177633, 532170, 1594323, . . .
+-- of Grygiel et al "How big is BCI fragmet of BCI logic"
+
+-- ===================================
+--     GENERATING AFINE CLOSED TERMS 
+-- ===================================
 
 -----------------------------------------------------
 --  generating with variable size 0
@@ -173,6 +180,63 @@ ag1 0 m =  if (head m == 1 && all ((==) 0) (tail m)) then [Box 0] else []
 ag1 n m = allAPPAG1 n m ++ allABSAG1wB n m ++ allABSAG1nB n m
 
 list_ag1 = [ag1 n (replicate upBound 0) | n<-[0..upBound]]
+
+-- ==================================================
+--     COUNTING CLOSED TERMS WITH VARIABLE SIZE 1
+-- ==================================================
+-- count first the number of closed terms with variable size 1
+
+mem :: [[Integer]]
+mem = [[t m n | n <- [0..]]| m<-[0..]]
+
+nbAppT m n = let tjn1 = take n (mem !! m)
+             in sum (zipWith (*) tjn1 (reverse tjn1))
+
+nbAbsT m n =  mem!!(m+1)!!(n-1)
+
+t:: Int -> Int -> Integer
+t _ 0 = 0
+t m 1 = fromIntegral m
+t m n =  nbAppT m n + nbAbsT m n
+          
+nbClosed = [t 0 n | n<-[0..]]
+
+-- ==================================================
+--     GENERATING CLOSED TERMS WITH VARIABLE SIZE 1
+-- ==================================================
+-- generate closed terùs with variables terms with variable size 1
+
+memg :: [[[SwissCheese]]]
+memg = [[gt m n | n <- [0..]]| m<-[0..]]
+
+nbAppGT :: Int -> Int -> [SwissCheese]
+nbAppGT m n = let tjn1 = take n (memg !! m)
+                  appAll l1 l2 = appSC (cartesian  l1 l2)
+              in foldl (++) [] (zipWith appAll tjn1 (reverse tjn1))
+
+nbAbsGT m n =  map AbsSC (memg!!(m+1)!!(n-1))
+
+deBruijnUntil 0 = []
+deBruijnUntil m = O:(map S (deBruijnUntil (m-1)))
+
+gt:: Int -> Int -> [SwissCheese]
+gt _ 0 = []
+gt m 1 = map IndexSC (deBruijnUntil m)
+gt m n =  nbAppGT m n ++ nbAbsGT m n
+  
+allClosed = [gt 0 n | n<-[0..]]
+
+-- ===================================================================
+--  COUNTING AFFINE CLOSED TERMS BY GENERRATION FILTERING AND COUNTING
+-- ===================================================================
+
+sC2Term (IndexSC d) = Index (deBruijn2Int d)
+sC2Term (AbsSC sc) = Abs (sC2Term sc)
+sC2Term (AppSC sc1 sc2) = App (sC2Term sc1) (sC2Term sc2) 
+
+isAffinSC sc = isAffine (sC2Term sc)
+
+countAffine = map length (map (filter isAffinSC) allClosed)
 
 --- Local Variables:
 --- mode: haskell

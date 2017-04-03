@@ -16,44 +16,8 @@ import System.Random
 -- Generating affine terms
 -- ============================================================
 
--- Constants
-
-memoryAG' :: Int -> [Int] -> MemSC
-memoryAG' 0 m = LoadSC [amg' n (reverse m) | n<-[0..]]
-memoryAG' k m = MemSC [memoryAG' (k-1) (j:m) | j<-[0..]] 
-
-theMemoryAG' = memoryAG' (upBound) []
-
-accAG' :: Int -> [Int] -> [SwissCheese]
-accAG' n m = accessSC theMemoryAG' n m
-
-amg' :: Int -> [Int] -> [SwissCheese]
-amg' 0 m =  if (head m == 1 && all ((==) 0) (tail m)) then [Box 0] else []
-amg' n m = let allApp = foldr (++) [] (map (\((q,r),(k,nk))-> appSC$cartesian (accAG' k q)
-                                                                             (accAG' nk r))
-                                      (allCombinations m (n-1)))
-               allAbs 0 = []
-               allAbs i = allAbs (i-1) ++ foldr (++) [] (map (abstract (i-1))
-                                                        (accAG' (n - i - 1)
-                                                         (tail (inc i m) ++ [0])))
-               allAbs' =  map (AbsSC . raise) (accAG' (n-1) (tail m ++ [0]))
-           in  allApp ++
-               if head m == 0
-               then allAbs (n-1) ++ allAbs'
-               else []
-
-list_amg' = [amg' n (replicate upBound 0) | n<-[0..upBound]]
-
-array_amg' i = let nbAffi = list_nbAffine !! i
-              in array (1,nbAffi) (zip [1..nbAffi] (list_amg' !! i))
-                 :: Array Integer SwissCheese
-
-----------------------------------------
--- generating separately classes
-----------------------------------------
-
 memoryAG :: Int -> [Int] -> MemSC
-memoryAG 0 m = LoadSC [amg n (reverse m) | n<-[0..]]
+memoryAG 0 m = LoadSC [ag n (reverse m) | n<-[0..]]
 memoryAG k m = MemSC [memoryAG (k-1) (j:m) | j<-[0..]] 
 
 theMemoryAG = memoryAG (upBound) []
@@ -80,14 +44,14 @@ allABSnB n m
   | head m == 0 = map (AbsSC . raise) (accAG (n-1) (tail m ++ [0]))
   | otherwise = []
                 
-amg :: Int -> [Int] -> [SwissCheese]
-amg 0 m =  if (head m == 1 && all ((==) 0) (tail m)) then [Box 0] else []
-amg n m = allAPP n m ++ allABSwB n m ++ allABSnB n m 
+ag :: Int -> [Int] -> [SwissCheese]
+ag 0 m =  if (head m == 1 && all ((==) 0) (tail m)) then [Box 0] else []
+ag n m = allAPP n m ++ allABSwB n m ++ allABSnB n m 
 
-list_amg = [amg n (replicate upBound 0) | n<-[0..upBound]]
+list_ag = [ag n (replicate upBound 0) | n<-[0..upBound]]
 
-array_amg i = let nbAffi = list_nbAffine !! i
-              in array (1,nbAffi) (zip [1..nbAffi] (list_amg !! i))
+array_ag i = let nbAffi = list_nbAffine !! i
+              in array (1,nbAffi) (zip [1..nbAffi] (list_ag !! i))
                  :: Array Integer SwissCheese
 
 -- =====================================================
@@ -106,7 +70,7 @@ randomClosedAffineTerm :: Int -> Gen SwissCheese
 randomClosedAffineTerm i =
   do randomDouble <- rand
      let randomIndex = round ((fromInteger (list_nbAffine !! i)) * randomDouble)
-     return ((array_amg i) ! randomIndex)
+     return ((array_ag i) ! randomIndex)
 
 anAffineSC :: Int -> Int -> SwissCheese
 anAffineSC sz seed =  evalState (randomClosedAffineTerm sz) (mkStdGen seed)

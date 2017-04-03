@@ -4,12 +4,13 @@
 -- 3. a random generator of affine closed normal form: anAffineCNF sz seed
 --                    (where sz is the size and seed a seed for the random generator).
 
-module AffineClosedNormalForm where
+module AffineNormalForm where
 
 import Data.Array.IArray
 import Control.Monad.State
 import System.Random
 
+import Constants
 import NaturalSize
 import TermUnranking
 import Affine

@@ -5,7 +5,7 @@
 -- 3. a random generator of linear closed normal form: aLinearCNF sz seed
 --                    (where sz is the size and seed a seed for the random generator).
 
-module LinearClosedNormalForm where
+module LinearNormalForm where
 
 import Data.Array.IArray
 import Control.Monad.State
@@ -13,6 +13,7 @@ import System.Random
 
 import NaturalSize
 import TermUnranking
+import Constants
 import Affine
 import NormalForm
 import SwissCheese

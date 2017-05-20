@@ -46,6 +46,10 @@ am0 n m = am0App n m + am0ABSwB n m + am0ABSnB n m
 
 nbClosedAffineSize0 = [am0 n (replicate upBound 0) | n<-[0..upBound]]
 
+-- [0,1,2,8,29,140,661,3622,19993,120909,744890,4887401,32795272,230728608,1661537689,12426619200,95087157771,750968991327]
+-- From Sage
+-- [[2, 2], [8, 3], [29, 4], [140, 5], [661, 6], [3622, 7], [19993, 8], [120909, 9], [744890, 10], [4887401, 11], [32795272, 12], [201444791, 13]]
+
 -- ============================================================
 --         COUNTING WITH VARIABLE SIZE 1
 -- ============================================================
@@ -87,7 +91,7 @@ am1 n m = am1App n m + am1ABSwB n m + am1ABSnB n m
 nbClosedAffineSize1 = [am1 n (replicate upBound 0) | n<-[0..upBound]]
 -- [0,0,1,2,3,9,30,81,242,838,2799,9365,33616,122937,449698,1696724,6558855,25559806,101294687,409363758,
 -- versus 0, 0, 1, 2, 3, 9, 30, 81, 225, 702, 2187, 6561, 19602, 59049, 177633, 532170, 1594323, . . .
--- of Grygiel et al "How big is BCI fragmet of BCI logic"
+-- of Grygiel et al "How big is BCI fragment of BCK logic"
 
 -- ===================================
 --     GENERATING AFINE CLOSED TERMS 

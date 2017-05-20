@@ -72,8 +72,9 @@ randomClosedAffineTerm i =
      let randomIndex = round ((fromInteger (list_nbAffine !! i)) * randomDouble)
      return ((array_ag i) ! randomIndex)
 
-anAffineSC :: Int -> Int -> SwissCheese
-anAffineSC sz seed =  evalState (randomClosedAffineTerm sz) (mkStdGen seed)
+aClosedAffine :: Int -> Int -> SwissCheese
+aClosedAffine sz seed =  evalState (randomClosedAffineTerm sz) (mkStdGen seed)
+-- limit to compute 19
 
 --- Local Variables:
 --- mode: haskell

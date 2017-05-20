@@ -5,12 +5,6 @@ import NaturalSize
 import TermUnranking
 import Constants
 
--- For example: cartesian [1,2] [3,4] = [(1,3),(1,4),(2,3),(2,4)]
-cartesian :: [a] -> [b] -> [(a,b)]
-cartesian [] _ = []
-cartesian _ [] = []
-cartesian (a1:l1) l2 = (map ((,) a1) l2) ++ cartesian l1 l2
-
 -------------------------------------------
 -- Operations on tuples 
 -------------------------------------------
@@ -90,7 +84,7 @@ access (Mem listM) n (k:m) = access (listM !! k) n m
 -----------------------------------------------------
 -- An efficient  version counting separately classes
 -----------------------------------------------------
--- The memory for storing the computation of a
+-- The memory for storing the computation of nbAffine
 memory :: Int -> [Int] -> Mem
 memory 0 m = Load [nbAffine n (reverse m) | n<-[0..]]
 memory k m = Mem [memory (k-1) (j:m) | j<-[0..]] 
@@ -121,7 +115,9 @@ aABSnB n m
 
 nbAffine :: Int -> [Int] -> Integer
 nbAffine 0 m = iv (head m == 1 && all ((==) 0) (tail m))
-nbAffine n m =  aAPP n m + aABSwB n m + aABSnB n m 
+nbAffine n m =  aAPP n m + aABSwB n m + aABSnB n m
+
+nbClosedAffine n = nbAffine n (replicate upBound 0)
 
 list_nbAffine = [nbAffine n (replicate upBound 0)|n<-[0..upBound]]
 

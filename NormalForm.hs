@@ -2,8 +2,11 @@
 -- normal forms for the natural size
 module NormalForm where
 
-import NaturalSize
 import System.Random
+
+import Constants
+import SwissCheese
+import NaturalSize
 import TermUnranking
 import Affine
 import Linear

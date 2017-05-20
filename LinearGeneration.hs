@@ -73,6 +73,7 @@ randomClosedLinearTerm i =
 
 aClosedLinear :: Int -> Int -> SwissCheese
 aClosedLinear sz seed =  evalState (randomClosedLinearTerm sz) (mkStdGen seed)
+-- limit to compute 23
 
 
 --- Local Variables:

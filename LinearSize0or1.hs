@@ -2,9 +2,12 @@
 -- variable size 0 or variable size 1
 module LinearSize0or1 where
 
+import Constants
+
 import NaturalSize
 import TermUnranking
 import Affine
+import Linear
 
 -- =======================================================
 --         COUNTING WITH VARIABLE SIZE 0
@@ -44,7 +47,7 @@ nbClosedLinearSize0 = [lm0 n (replicate upBound 0) | n<-[0..upBound]]
 
 nbClosedLinearSize0By2 =  [lm0 (2*k+1) (replicate upBound 0) | k<-[0..(upBound `div` 2)]]
 
--- [1,5,60,1105,27120,828250,30220800,
+-- [1,5,60,1105,27120,828250,30220800,1282031525
 
 -- =======================================================
 --         COUNTING WITH VARIABLE SIZE 1
@@ -70,12 +73,11 @@ lm1ABSAtD n m i = (fromIntegral(1 + m!!i))*(accL1 (n-2) (tail (inc i m)++[0]))
 -- counting linear terms that are abstractions with binding
 lm1ABSwB :: Int -> [Int] -> Integer
 lm1ABSwB n m
-  | head m == 0 = sum [lm1ABSAtD n m i |i<-[1..n]]
+  | head m == 0 = sum [lm1ABSAtD n m i |i<-[1..(n-1)]]
   | otherwise = 0
  
 lm1 :: Int -> [Int] -> Integer
 lm1 0 m = iv (head m == 1 && all ((==) 0) (tail m)) -- there is only □0
-lm1 1 m = iv (head m == 2 && all ((==) 0) (tail m)) -- there is only □0 □0 
 lm1 n m = lm1App n m + lm1ABSwB n m 
 
 nbClosedLinearSize1 = [lm1 n (replicate upBound 0) | n<-[0..upBound]]
